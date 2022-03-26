@@ -11,7 +11,8 @@
     "event sourcing",
     "cqrs",
     "json schema",
-    "asyncapi"
+    "asyncapi",
+    "openapi"
   ],
   "homepage": "https://fluxlabs.ch",
   "license": "GPL-3.0-only",

@@ -1,0 +1,16 @@
+---
+name: AggregateRootMapping
+type: object
+properties:
+  projectionId:
+    type: string
+  projectionName:
+    type: string
+  aggregateId:
+    type: string
+  aggregateName:
+    type: string
+  externalId:
+    type: string
+    nullable: true
+...

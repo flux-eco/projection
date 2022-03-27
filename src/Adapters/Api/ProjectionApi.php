@@ -24,7 +24,7 @@ class ProjectionApi
         return new self($projectionService);
     }
 
-    final public function initializeProjectiond(): void
+    final public function initializeProjections(): void
     {
         $this->projectionService->initalizeProjectionStorages();
     }

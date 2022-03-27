@@ -19,14 +19,14 @@ class ProjectionApi
 
     public static function new(): self
     {
-        $projectionConfig = Adapters\Configs\ProjectionOutbounds::new();
+        $projectionConfig = Adapters\Configs\Outbounds::new();
         $projectionService = Ports\ProjectionService::new($projectionConfig);
         return new self($projectionService);
     }
 
-    final public function initializeProjection(array $projectionSchema): void
+    final public function initializeProjectiond(): void
     {
-        $this->projectionService->initalizeProjectionStorage($projectionSchema);
+        $this->projectionService->initalizeProjectionStorages();
     }
 
     final public function getAggregateRootMappingsForProjectionId(string $projectionId): ?array {

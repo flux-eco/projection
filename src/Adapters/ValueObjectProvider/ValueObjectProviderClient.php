@@ -2,7 +2,7 @@
 
 namespace FluxEco\Projection\Adapters\ValueObjectProvider;
 
-use FluxEco\ValueObjectAdapters\Api;
+use FluxEco\ValueObject\Adapters\Api;
 use FluxEco\Projection\Core;
 
 class ValueObjectProviderClient implements Core\Ports\ValueObjectProvider\ValueObjectProviderClient

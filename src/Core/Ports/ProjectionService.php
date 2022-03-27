@@ -18,43 +18,66 @@ class ProjectionService
     private Storage\ProjectionStorageClient $projectionStorageClient;
     private SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient;
     private ValueObjectProvider\ValueObjectProviderClient $valueObjectProviderClient;
+    private Projector\ProjectorClient $projectorClient;
+    private array $projectionSchemaDirectories;
 
     private function __construct(
         Storage\ProjectionStorageClient $projectionStorageClient,
         SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient,
         ValueObjectProvider\ValueObjectProviderClient $valueObjectProviderClient,
-
+        Projector\ProjectorClient $projectorClient,
+        array $projectionSchemaDirectories
     ) {
         $this->projectionStorageClient = $projectionStorageClient;
         $this->projectionSchemaClient = $projectionSchemaClient;
         $this->valueObjectProviderClient = $valueObjectProviderClient;
+        $this->projectorClient = $projectorClient;
+        $this->projectionSchemaDirectories = $projectionSchemaDirectories;
     }
 
-    public static function new(Configs\ProjectionOutbounds $projectionOutbounds) : self
+    public static function new(Configs\Outbounds $projectionOutbounds) : self
     {
         return new self(
             $projectionOutbounds->getProjectionStorageClient(),
             $projectionOutbounds->getProjectionSchemaClient(),
-            $projectionOutbounds->getValueObjectProvider()
+            $projectionOutbounds->getValueObjectProvider(),
+            $projectionOutbounds->getProjectorClient(),
+            $projectionOutbounds->getProjectionSchemaDirectories()
         );
     }
 
-    final public function initalizeProjectionStorage(
-        array $projectionSchema
-    ) : void {
-        $projectionName = $projectionSchema['name'];
-        $projectionStorageClient = $this->projectionStorageClient;
+    final public function initalizeProjectionStorages() : void
+    {
+        foreach ($this->getProjectionSchemas() as $projectionSchema) {
+            $projectionName = $projectionSchema['name'];
+            $projectionStorageClient = $this->projectionStorageClient;
 
-        $deleteProjectionStorage = Handlers\DeleteProjectionStorageCommand::new($projectionName, $projectionSchema);
-        $deleteProjectionStorageHandler = Handlers\DeleteProjectionStorageHandler::new($projectionStorageClient);
-        $deleteProjectionStorageHandler->handle($deleteProjectionStorage);
+            $deleteProjectionStorage = Handlers\DeleteProjectionStorageCommand::new($projectionName, $projectionSchema);
+            $deleteProjectionStorageHandler = Handlers\DeleteProjectionStorageHandler::new($projectionStorageClient);
+            $deleteProjectionStorageHandler->handle($deleteProjectionStorage);
 
+            $createProjectionStorage = Handlers\CreateProjectionStorageCommand::new($projectionName, $projectionSchema);
+            $createProjectionStorageHandler = Handlers\CreateProjectionStorageHandler::new($projectionStorageClient);
+            $createProjectionStorageHandler->handle($createProjectionStorage);
 
-        $createProjectionStorage = Handlers\CreateProjectionStorageCommand::new($projectionName, $projectionSchema);
-        $createProjectionStorageHandler = Handlers\CreateProjectionStorageHandler::new($projectionStorageClient);
-        $createProjectionStorageHandler->handle($createProjectionStorage);
+            if (key_exists('aggregateRootNames', $projectionSchema)) {
+                $this->projectorClient->reprojectGlobalStreamStates($projectionSchema['aggregateRootNames']);
+            }
+        }
+    }
 
-
+    private function getProjectionSchemas() : array
+    {
+        $projectionSchemas = [];
+        foreach ($this->projectionSchemaDirectories as $projectionSchemaDirectory) {
+            $projectionFiles = scandir($projectionSchemaDirectory);
+            foreach ($projectionFiles as $projectionFile) {
+                if (pathinfo($projectionFile, PATHINFO_EXTENSION) === "yaml") {
+                    $projectionSchemas[] = yaml_parse(file_get_contents($projectionSchemaDirectory . '/' . $projectionFile));
+                }
+            }
+        }
+        return $projectionSchemas;
     }
 
     final public function deleteProjectedRows(
@@ -128,50 +151,6 @@ class ProjectionService
         return null;
 
     }
-
-    /*
-    final public function getProjectionIdForAggregate(string $projectionName, string $aggregateName, string $aggregateId, ?string $externalId = null): string
-    {
-        $projectionId = $this->getProjectionIdForAggregateProjection($projectionName, $aggregateId);
-
-        if ($projectionId === null) {
-            $projectionId = $this->valueObjectProviderClient->createUuid();
-            $aggregateRootMapping = Domain\Models\AggregateRootMapping::new(
-                $projectionName,
-                $projectionId,
-                $aggregateName,
-                $aggregateId,
-                $externalId
-            );
-            $this->createItem($projectionName, $projectionId, $aggregateRootMapping->toArray());
-            return $projectionId;
-        }
-
-        return $projectionId;
-    }*/
-
-    /*
-    private function getProjectionIdForAggregateProjection(string $projectionName, string $aggregateId): ?string
-    {
-        $mappingProjectionName = 'AggregateRootMapping';
-        $schema = $this->getProjectionSchema($mappingProjectionName);
-        $filter = [
-            'projectionName' => $projectionName,
-            'aggregateId' => $aggregateId
-        ];
-
-        $result = $this->projectionStorageClient->query($mappingProjectionName, $schema, $filter);
-
-        if (count($result) > 1) {
-            throw new \RuntimeException('Inconsistent Database: There are more than one projections ' . $projectionName . ' for the same aggregate: ' . $aggregateId);
-        }
-
-        if (count($result) === 1) {
-            return $result[0]['projectionId'];
-        }
-
-        return null;
-    }*/
 
     /** @return ?Domain\Models\AggregateRootMapping[] */
     final public function getAggregateRootMappingsForProjectionId(string $projectionId) : ?array

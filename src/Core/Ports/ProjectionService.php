@@ -134,7 +134,6 @@ class ProjectionService
         ];
 
         $results = $this->projectionStorageClient->query($mappingProjectionName, $schema, $filter);
-        print_r($results);
         $mappings = [];
         if ($results > 0) {
             foreach ($results as $result) {

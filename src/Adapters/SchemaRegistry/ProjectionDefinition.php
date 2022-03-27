@@ -22,7 +22,6 @@ class ProjectionDefinition implements Ports\SchemaRegistry\ProjectionDefinition
 
 
         $schema = yaml_parse(file_get_contents($schemaYamlFilePath));
-        print_r($schema);
         $properties = $schema['properties'];
 
         $this->subjectNames = $this->extractCorrespondingSubjectNames($properties);

@@ -280,26 +280,17 @@ class ProjectionService
         if (count($queriedRows) > 0) {
             return $queriedRows;
         }
-
-        /*
-        $projectionStream = Domain\ProjectionStream::new($this->projectionStorageClient, $projectionName, $projectionSchema);
-        $projectedRows = $projectionStream->getProjectedRows();
-        if (count($projectedRows) > 0) {
-            $items = [];
-            foreach ($projectedRows as $projectedRow) {
-                $items[] = $projectedRow->toArray();
-            }
-            return $items;
-        }
-        */
         return [];
     }
 
     final public function getItem(string $projectionName, string $projectionId) : array
     {
         $projectionSchema = $this->getProjectionSchema($projectionName);
-        $projectionStream = Domain\ProjectionStream::new($this->projectionStorageClient, $projectionName,
-            $projectionSchema);
+        $projectionStream = Domain\ProjectionStream::new(
+            $this->projectionStorageClient,
+            $projectionName,
+            $projectionSchema
+        );
         return $projectionStream->getProjectedRowForProjectionId($projectionId)->toArray();
     }
 

@@ -1,18 +1,12 @@
 {
   "name": "flux-eco/projection",
-  "description": "Component for flux-capacitor apps developed by fluxlabs",
-  "version": "0.0.1",
+  "description": "Creates projections of aggregate root objects",
+  "version": "0.0.2",
   "type": "flux-app",
   "keywords": [
-    "flux-ecosystem",
-    "flux-capacitor",
-    "fluxlabs ag",
-    "microservice",
-    "event sourcing",
-    "cqrs",
-    "json schema",
-    "asyncapi",
-    "openapi"
+    "flux-eco",
+    "projection",
+    "fluxlabs"
   ],
   "homepage": "https://fluxlabs.ch",
   "license": "GPL-3.0-only",

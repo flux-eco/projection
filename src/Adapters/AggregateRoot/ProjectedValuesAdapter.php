@@ -1,6 +1,6 @@
 <?php
 
-namespace FluxEco\Projection\Adapters\Api;
+namespace FluxEco\Projection\Adapters\AggregateRoot;
 
 use  FluxEco\Projection\Core\Domain;
 
@@ -8,18 +8,16 @@ use  FluxEco\Projection\Core\Domain;
 class ProjectedValuesAdapter
 {
     private array $data;
-    private array $schema;
 
-    private function __construct(array $data, array $schema)
+    private function __construct(array $data)
     {
         $this->data = $data;
-        $this->schema = $schema;
     }
 
-    public static function fromJson(string $jsonData, array $jsonSchema): self
+    public static function fromJson(string $jsonData): self
     {
         $data = json_decode($jsonData, true, 512, JSON_THROW_ON_ERROR);
-        return new self($data, $jsonSchema);
+        return new self($data);
     }
 
 

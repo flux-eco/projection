@@ -5,30 +5,28 @@ use FluxEco\Projection\Core\Ports;
 
 class GetProjectionIdForAggregateProjectionHandler implements Handler
 {
-    private Ports\Storage\ProjectionStorageClient       $projectionStorageClient;
-    private Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient;
+    private Ports\Outbounds $outbounds;
 
     private function __construct(
-        Ports\Storage\ProjectionStorageClient       $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient
+        Ports\Outbounds $outbounds
     )
     {
-        $this->projectionStorageClient = $projectionStorageClient;
-        $this->projectionSchemaClient = $projectionSchemaClient;
+        $this->outbounds = $outbounds;
     }
 
     public static function new(
-        Ports\Storage\ProjectionStorageClient       $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient
+        Ports\Outbounds $outbounds
     ): self
     {
-        return new self($projectionStorageClient, $projectionSchemaClient);
+        return new self(
+            $outbounds
+        );
     }
 
     public function handle(GetProjectionIdForAggregateProjectionCommand|Command $command): ?string {
 
         $mappingProjectionName = 'AggregateRootMapping';
-        $schema = $this->projectionSchemaClient->getProjectionSchema($mappingProjectionName);
+        $schema = $this->outbounds->getProjectionSchema($mappingProjectionName);
 
         $projectionName = $command->getProjectionName();
         $aggregateId =  $command->getAggregateId();
@@ -38,7 +36,7 @@ class GetProjectionIdForAggregateProjectionHandler implements Handler
             'aggregateId' => $aggregateId
         ];
 
-        $result = $this->projectionStorageClient->query($mappingProjectionName, $schema, $filter);
+        $result = $this->outbounds->queryProjectionStorage($mappingProjectionName, $schema, $filter);
 
         if (count($result) > 1) {
             throw new \RuntimeException('Inconsistent Database: There are more than one projections ' . $projectionName . ' for the same aggregate: ' . $aggregateId);
@@ -49,6 +47,5 @@ class GetProjectionIdForAggregateProjectionHandler implements Handler
         }
 
         return null;
-
     }
 }

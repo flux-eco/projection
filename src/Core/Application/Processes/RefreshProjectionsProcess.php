@@ -11,28 +11,20 @@ use FluxEco\Projection\Core\{Application\Handlers, Domain, Ports};
  */
 class RefreshProjectionsProcess
 {
-    private Ports\Storage\ProjectionStorageClient $projectionStorageClient;
-    private Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient;
-    private Ports\ValueObjectProvider\ValueObjectProviderClient $valueObjectProviderClient;
+    private Ports\Outbounds $outbounds;
 
     private function __construct(
-        Ports\Storage\ProjectionStorageClient               $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient         $projectionSchemaClient,
-        Ports\ValueObjectProvider\ValueObjectProviderClient $valueObjectProviderClient
+        Ports\Outbounds $outbounds
     )
     {
-        $this->projectionStorageClient = $projectionStorageClient;
-        $this->projectionSchemaClient = $projectionSchemaClient;
-        $this->valueObjectProviderClient = $valueObjectProviderClient;
+        $this->outbounds = $outbounds;
     }
 
     public static function new(
-        Ports\Storage\ProjectionStorageClient               $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient         $projectionSchemaClient,
-        Ports\ValueObjectProvider\ValueObjectProviderClient $valueObjectProviderClient
+        Ports\Outbounds $outbounds
     ): self
     {
-        return new self($projectionStorageClient, $projectionSchemaClient, $valueObjectProviderClient);
+        return new self($outbounds);
     }
 
     /**
@@ -46,11 +38,8 @@ class RefreshProjectionsProcess
         $rowValues = $command->getItems();
 
 
-        $projectionStorageClient = $this->projectionStorageClient;
-        $projectionSchemaClient = $this->projectionSchemaClient;
-
         foreach ($projectionSchemas as $projectionSchema) {
-            $projectionName = $projectionSchema['name'];
+            $projectionName = $projectionSchema['title'];
 
             $externalId = null;
             if (empty($projectionSchema['externalIdName']) === false) {
@@ -58,17 +47,17 @@ class RefreshProjectionsProcess
             }
 
             $getProjectionIdForAggregateProjectionCommand = Handlers\GetProjectionIdForAggregateProjectionCommand::new($projectionName, $aggregateId);
-            $projectionId = Handlers\GetProjectionIdForAggregateProjectionHandler::new($projectionStorageClient, $projectionSchemaClient)->handle($getProjectionIdForAggregateProjectionCommand);
+            $projectionId = Handlers\GetProjectionIdForAggregateProjectionHandler::new($this->outbounds)->handle($getProjectionIdForAggregateProjectionCommand);
 
             if ($projectionId === null) {
-                $projectionId = $this->valueObjectProviderClient->createUuid();
+                $projectionId = $this->outbounds->getNewUuid();
                 $storeProjectionAggregateMappingCommand = Handlers\StoreProjectionAggregateMappingCommand::new($projectionName, $projectionId, $aggregateName, $aggregateId, $externalId);
-                $storeProjectionAggregateMappingHandler = Handlers\StoreProjectionAggregateMappingHandler::new($projectionStorageClient, $projectionSchemaClient);
+                $storeProjectionAggregateMappingHandler = Handlers\StoreProjectionAggregateMappingHandler::new($this->outbounds);
                 $this->processCommand($storeProjectionAggregateMappingCommand, $storeProjectionAggregateMappingHandler);
             }
 
             $storeProjectionCommand = Handlers\StoreProjectionCommand::new($projectionName, $projectionId, $rowValues->toArray());
-            $storeProjectionHandler = Handlers\StoreProjectionHandler::new($projectionStorageClient, $projectionSchemaClient);
+            $storeProjectionHandler = Handlers\StoreProjectionHandler::new($this->outbounds);
             $this->processCommand($storeProjectionCommand, $storeProjectionHandler);
         }
     }

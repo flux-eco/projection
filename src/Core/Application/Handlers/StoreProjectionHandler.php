@@ -9,24 +9,20 @@ use FluxEco\Projection\Core\{Domain, Ports};
 
 class StoreProjectionHandler implements Handler
 {
-    private Ports\Storage\ProjectionStorageClient $projectionStorageClient;
-    private Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient;
+    private Ports\Outbounds $outbounds;
 
     private function __construct(
-        Ports\Storage\ProjectionStorageClient       $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient
+        Ports\Outbounds $outbounds
     )
     {
-        $this->projectionStorageClient = $projectionStorageClient;
-        $this->projectionSchemaClient = $projectionSchemaClient;
+        $this->outbounds = $outbounds;
     }
 
     public static function new(
-        Ports\Storage\ProjectionStorageClient       $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient
+        Ports\Outbounds $outbounds
     ): self
     {
-        return new self($projectionStorageClient, $projectionSchemaClient);
+        return new self($outbounds);
     }
 
     final public function handle(StoreProjectionCommand|Command $command)
@@ -35,10 +31,9 @@ class StoreProjectionHandler implements Handler
         $projectionId = $command->getProjectionId();
         $data = $command->getData();
 
-        $projectionStorageClient = $this->projectionStorageClient;
-        $projectionSchema = $this->projectionSchemaClient->getProjectionSchema($projectionName);
+        $projectionSchema = $this->outbounds->getProjectionSchema($projectionName);
 
-        $projectionStream = Domain\ProjectionStream::new($projectionStorageClient, $projectionName, $projectionSchema);
+        $projectionStream = Domain\ProjectionStream::new($this->outbounds, $projectionName, $projectionSchema);
         $projectionStream->projectData($projectionId, $data);
     }
 }

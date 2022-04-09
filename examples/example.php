@@ -60,3 +60,11 @@ $item = fluxProjection\getItem($projectionName, $projectionId);
 
 print_r($item).PHP_EOL.PHP_EOL;
 
+
+//getAggregateRootMappingsForProjectionId
+echo 'getAggregateRootMappingsForProjectionId '.PHP_EOL;
+
+$mapping = fluxProjection\getAggregateRootMappingsForProjectionId($projectionId);
+
+print_r($mapping).PHP_EOL.PHP_EOL;
+

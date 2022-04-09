@@ -129,17 +129,18 @@ class ProjectionService
     /** @return ?Domain\Models\AggregateRootMapping[] */
     final public function getAggregateRootMappingsForProjectionId(string $projectionId) : ?array
     {
-        $projectionName = $this->outbounds->getAggregateRootMappingProjectionName();
-        $projectionSchema = $this->getProjectionSchema($projectionName);
+        $mappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $mappingProjectionSchema = $this->getProjectionSchema($mappingProjectionName);
         $filter = ['projectionId' => $projectionId];
-        $result = $this->outbounds->queryProjectionStorage($projectionName, $projectionSchema, $filter);
+        $result = $this->outbounds->queryProjectionStorage($mappingProjectionName, $mappingProjectionSchema, $filter);
         if (count($result) > 0) {
             $aggregateRootMappings = [];
             foreach ($result as $key => $value) {
-                $aggregateRootMappings[] = RootObjectMapping::new(
+                $aggregateRootMappings[] = Domain\Models\AggregateRootMapping::new(
+                    $value['projectionName'],
+                    $value['projectionId'],
                     $value['aggregateName'],
-                    $value['aggregateId'],
-                    []
+                    $value['aggregateId']
                 );
             }
             return $aggregateRootMappings;

@@ -150,6 +150,14 @@ echo "getItem: ".PHP_EOL;
 $item = fluxProjection\getItem($projectionName, $projectionId);
 
 print_r($item).PHP_EOL.PHP_EOL;
+
+
+//getAggregateRootMappingsForProjectionId
+echo 'getAggregateRootMappingsForProjectionId '.PHP_EOL;
+
+$mapping = fluxProjection\getAggregateRootMappingsForProjectionId($projectionId);
+
+print_r($mapping).PHP_EOL.PHP_EOL;
 ```
 
 output
@@ -163,28 +171,34 @@ Array
 (
     [0] => Array
         (
-            [projectionId] => 99e14ce0-13fd-4e84-939a-13a4cf16ef5a
-            [firstname] => Emmett
-            [lastname] => Brown
-        )
-
-    [1] => Array
-        (
-            [projectionId] => 9cf98d18-faf3-46a9-bdbc-57341c3b304b
+            [projectionId] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
             [firstname] => Emmett
             [lastname] => Brown
         )
 
 )
 getProjectionIdForAggregateId 
-9cf98d18-faf3-46a9-bdbc-57341c3b304b
+ec6331f0-306a-48bc-9ac3-c11114e55bbf
 
 getItem: 
 Array
 (
-    [projectionId] => 9cf98d18-faf3-46a9-bdbc-57341c3b304b
+    [projectionId] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
     [firstname] => Emmett
     [lastname] => Brown
+)
+getAggregateRootMappingsForProjectionId 
+Array
+(
+    [0] => FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter Object
+        (
+            [projectionName:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => account
+            [projectionId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
+            [aggregateName:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => account
+            [aggregateId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => 6a1e4b65-0810-4bb2-a120-6624be0a7107
+            [externalId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => 
+        )
+
 )
 ```
 

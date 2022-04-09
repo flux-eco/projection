@@ -29,8 +29,16 @@ class Api
         $this->projectionService->initalizeProjectionStorages();
     }
 
-    final public function getAggregateRootMappingsForProjectionId(string $projectionId): ?array {
-        return $this->projectionService->getAggregateRootMappingsForProjectionId($projectionId);
+    /** @return Adapters\AggregateRoot\AggregateRootMappingAdapter[] */
+    final public function getAggregateRootMappingsForProjectionId(string $projectionId): array {
+        $aggregateRootMappings = $this->projectionService->getAggregateRootMappingsForProjectionId($projectionId);
+
+        $return = [];
+        foreach($aggregateRootMappings as $aggregateRootMapping) {
+            $return[] = Adapters\AggregateRoot\AggregateRootMappingAdapter::fromDomain($aggregateRootMapping);
+        }
+
+        return $return;
     }
 
     final public function receiveAggregateRootStatePublished(

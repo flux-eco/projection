@@ -1,5 +1,5 @@
 ---
-name: AggregateRootMapping
+title: AggregateRootMapping
 type: object
 properties:
   projectionId:

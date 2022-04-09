@@ -1,7 +1,7 @@
 <?php
 
 
-namespace FluxEco\Projection\Adapters\Api;
+namespace FluxEco\Projection\Adapters\AggregateRoot;
 
 use FluxEco\Projection\{Core\Domain};
 
@@ -60,6 +60,4 @@ class RootObjectMapping
     {
         return $this->properties;
     }
-
-
 }

@@ -6,20 +6,20 @@ use FluxEco\Projection\Core\{Ports};
 
 class DeleteProjectionStorageHandler implements Handler
 {
-    private Ports\Storage\ProjectionStorageClient $projectionStorageClient;
+    private Ports\Outbounds $outbounds;
 
     private function __construct(
-        Ports\Storage\ProjectionStorageClient $projectionStorageClient)
+        Ports\Outbounds $outbounds)
     {
-        $this->projectionStorageClient = $projectionStorageClient;
+        $this->outbounds = $outbounds;
     }
 
     public static function new(
-        Ports\Storage\ProjectionStorageClient $projectionStorageClient
+        Ports\Outbounds $outbounds
     ): self
     {
         return new self(
-            $projectionStorageClient
+            $outbounds
         );
     }
 
@@ -28,7 +28,7 @@ class DeleteProjectionStorageHandler implements Handler
     {
         $tableName = $command->getTableName();
         $schema = $command->getSchema();
-        $this->projectionStorageClient->deleteProjectionStorage($tableName, $schema);
+        $this->outbounds->deleteProjectionStorage($tableName, $schema);
     }
 
 }

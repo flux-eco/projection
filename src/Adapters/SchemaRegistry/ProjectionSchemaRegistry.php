@@ -96,7 +96,7 @@ class ProjectionSchemaRegistry
                 $this->aggregateProjections[$aggregateRootName][] = $projectionSchema;
             }
         }
-        $this->projections[$projectionSchema['name']] = $projectionSchema;
+        $this->projections[$projectionSchema['title']] = $projectionSchema;
     }
 
 

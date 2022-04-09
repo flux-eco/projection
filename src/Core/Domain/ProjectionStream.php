@@ -3,6 +3,7 @@
 namespace FluxEco\Projection\Core\Domain;
 
 use FluxEco\Projection\Adapters\Storage\ProjectionStorageClient;
+use FluxEco\Projection\Core\Ports;
 
 class ProjectionStream
 {
@@ -21,19 +22,19 @@ class ProjectionStream
     /** @var ProjectedRow[] */
     private array $subjectIdMapping = [];
 
-    private ProjectionStorageClient $projectionStorageClient;
+    private  Ports\Outbounds $outbounds;
     /** @var ProjectedRow[] */
     private array $recordedRows = [];
 
     private function __construct(
-        ProjectionStorageClient $projectionStorageClient,
+        Ports\Outbounds $outbounds,
         string                  $projectionName,
         array                   $schema,
         int                     $sequenceOffSet = 0,
         int                     $limit = 0
     )
     {
-        $this->projectionStorageClient = $projectionStorageClient;
+        $this->outbounds = $outbounds;
         $this->projectionName = $projectionName;
         $this->schema = $schema;
         $this->sequenceOffSet = $sequenceOffSet;
@@ -44,7 +45,7 @@ class ProjectionStream
     }
 
     public static function new(
-        ProjectionStorageClient $projectionStorageClient,
+        Ports\Outbounds $outbounds,
         string                  $projectionName,
         array                   $schema,
         int                     $sequenceOffSet = 0,
@@ -53,7 +54,7 @@ class ProjectionStream
     {
         if (empty(static::$instances[$projectionName]) === true) {
             static::$instances[$projectionName] = new self(
-                $projectionStorageClient,
+                $outbounds,
                 $projectionName,
                 $schema,
                 $sequenceOffSet,
@@ -65,16 +66,16 @@ class ProjectionStream
 
     private function loadNumberOfTotalRows(): void
     {
-        $totalRows = $this->projectionStorageClient->countTotalRows();
-        $this->total = $totalRows;
+        $this->total = $this->outbounds->countTotalProjectedRow($this->projectionName, $this->schema);
     }
 
     final public function loadProjectedRows(int $sequenceOffSet = 0, int $limit = 0): void
     {
-        $queriedRows = $this->projectionStorageClient->queryProjectionStorage($this->projectionName, $this->schema, $sequenceOffSet, $limit);
+        $queriedRows = $this->outbounds->queryProjectionStorage($this->projectionName, $this->schema, [], $sequenceOffSet, $limit);
         foreach ($queriedRows as $projectedRow) {
             $this->apply($projectedRow);
         }
+
         $this->totalLoaded = count($this->projectedRows);
     }
 
@@ -204,7 +205,7 @@ class ProjectionStream
     private function storeRecordedRows(): void
     {
         if ($this->hasRecordedRows() === true) {
-            $this->projectionStorageClient->storeRecordedRows(
+            $this->outbounds->storeProjectedRows(
                 $this->projectionName,
                 $this->schema,
                 $this->recordedRows

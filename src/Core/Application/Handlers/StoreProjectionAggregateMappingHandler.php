@@ -16,14 +16,13 @@ class StoreProjectionAggregateMappingHandler implements Handler
     }
 
     public static function new(
-        Ports\Storage\ProjectionStorageClient       $projectionStorageClient,
-        Ports\SchemaRegistry\ProjectionSchemaClient $projectionSchemaClient
+        Ports\Outbounds $outbounds
     ): self
     {
         $aggregateRootMappingProjectionName = 'AggregateRootMapping';
-        $aggregateRootMappingSchema = $projectionSchemaClient->getProjectionSchema('AggregateRootMapping');
+        $aggregateRootMappingSchema = $outbounds->getProjectionSchema('AggregateRootMapping');
         $projectionStream = Domain\ProjectionStream::new(
-            $projectionStorageClient,
+            $outbounds,
             $aggregateRootMappingProjectionName,
             $aggregateRootMappingSchema
         );

@@ -54,6 +54,9 @@ class Api
         }
     }
 
+    final public function getAggregateIdForProjectionId(string $projectionName, string $projectionId, string $aggregateName): string {
+        return $this->projectionService->getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName);
+    }
 
     final public function getItemList(string $projectionName, array $filter): array
     {

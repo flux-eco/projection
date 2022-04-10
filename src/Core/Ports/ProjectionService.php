@@ -165,7 +165,7 @@ class ProjectionService
     final public function getProjectionIdForExternalId(string $projectionName, string $externalId) : ?string
     {
 
-        $aggregateRootMappingProjectionName = 'AggregateRootMapping';
+        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
         $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
         $filter = [
             'projectionName' => $projectionName,
@@ -179,6 +179,26 @@ class ProjectionService
 
         if (count($result) === 1) {
             return $result[0]['projectionId'];
+        }
+        return null;
+    }
+
+    final public function getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName): ?string {
+        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
+        $filter = [
+            'projectionName' => $projectionName,
+            'projectionId' => $projectionId,
+            'aggregateName' => $aggregateName
+        ];
+
+        $result = $this->outbounds->queryProjectionStorage($aggregateRootMappingProjectionName, $aggregateRootMappingProjectionSchema, $filter);
+        if (count($result) > 1) {
+            throw new Exception('More than one mapping result found for aggregateName: ' . $aggregateName .', projectionId '.$projectionId);
+        }
+
+        if (count($result) === 1) {
+            return $result[0]['aggregateId'];
         }
         return null;
     }
@@ -255,6 +275,8 @@ class ProjectionService
         $storeProjectionHandler = Handlers\StoreProjectionHandler::new($this->outbounds);
         $storeProjectionHandler->handle($storeProjectionCommand);
     }
+
+
 
     /** @return Domain\ProjectedRow[] */
     final public function getItemList(string $projectionName, array $filter) : array

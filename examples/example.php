@@ -62,6 +62,14 @@ $projectionId = fluxProjection\getProjectionIdForAggregateId($projectionName, $a
 
 echo $projectionId.PHP_EOL.PHP_EOL;
 
+//getAggregateIdForProjectionId
+echo 'getAggregateIdForProjectionId: '.PHP_EOL;
+$aggregateName = 'account';
+
+$aggregateId = fluxProjection\getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName);
+
+echo $aggregateId.PHP_EOL.PHP_EOL;
+
 
 //getItem
 echo "getItem: ".PHP_EOL;

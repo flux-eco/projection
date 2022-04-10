@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [1.2.0]
+* added getAggregateRootMappingsForProjectionData(string $projectionName, array $keyValueData)
+
 ## [1.1.0]
 * added getAggregateRootMappingsForProjectionId
 

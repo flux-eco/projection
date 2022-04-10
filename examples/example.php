@@ -8,6 +8,16 @@ FluxEco\DotEnv\Api::new()->load(__DIR__);
 fluxProjection\initialize();
 echo "projection storage initialized".PHP_EOL.PHP_EOL;
 
+//getAggregateRootMappingsForProjectionData
+$projectionName = 'account';
+$projectionData = [
+    "firstname" => "Emmett",
+    "lastname" => "Brown",
+];
+$aggregateRootMappings = fluxProjection\getAggregateRootMappingsForProjectionData($projectionName, $projectionData);
+echo 'getAggregateRootMappingsForProjectionData'.PHP_EOL.PHP_EOL;
+print_r($aggregateRootMappings);
+
 //receive aggregateRootStatePublished
 $aggregateRootId = fluxValueObject\getNewUuid();
 $aggregateRootName = 'account';
@@ -60,11 +70,4 @@ $item = fluxProjection\getItem($projectionName, $projectionId);
 
 print_r($item).PHP_EOL.PHP_EOL;
 
-
-//getAggregateRootMappingsForProjectionId
-echo 'getAggregateRootMappingsForProjectionId '.PHP_EOL;
-
-$mapping = fluxProjection\getAggregateRootMappingsForProjectionId($projectionId);
-
-print_r($mapping).PHP_EOL.PHP_EOL;
 

@@ -126,26 +126,25 @@ class ProjectionService
 
     }
 
-    /** @return ?Domain\Models\AggregateRootMapping[] */
-    final public function getAggregateRootMappingsForProjectionId(string $projectionId) : ?array
+    final public function getAggregateRootMappingsForProjectionData(string $projectionName, array $keyValueData) : array
     {
-        $mappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
-        $mappingProjectionSchema = $this->getProjectionSchema($mappingProjectionName);
-        $filter = ['projectionId' => $projectionId];
-        $result = $this->outbounds->queryProjectionStorage($mappingProjectionName, $mappingProjectionSchema, $filter);
-        if (count($result) > 0) {
-            $aggregateRootMappings = [];
-            foreach ($result as $key => $value) {
-                $aggregateRootMappings[] = Domain\Models\AggregateRootMapping::new(
-                    $value['projectionName'],
-                    $value['projectionId'],
-                    $value['aggregateName'],
-                    $value['aggregateId']
-                );
+        $projectionSchema = $this->getProjectionSchema($projectionName);
+        $mappings = [];
+
+        if (count($keyValueData) > 0) {
+            foreach ($keyValueData as $key => $value) {
+                //todo assert key exists as property
+                $propertyPath = $projectionSchema['properties'][$key]['index'];
+                $propertyPathParts = explode('.', $propertyPath);
+
+                if ($propertyPathParts[1] === 'rootObject') {
+                    $aggregateRootPropertyKey = $propertyPathParts[2];
+                    $aggregateName = $propertyPathParts[0];
+                    $mappings[$aggregateName][$aggregateRootPropertyKey] = $value;
+                }
             }
-            return $aggregateRootMappings;
         }
-        return null;
+        return $mappings;
     }
 
     final public function  getProjectionIdForAggregateId(string $projectionName, string $aggregateId): ?string {

@@ -203,7 +203,27 @@ class ProjectionService
         return null;
     }
 
+    final public function getAggregateIdsForProjectionId($projectionName, $projectionId): array {
+        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
+        $filter = [
+            'projectionName' => $projectionName,
+            'projectionId' => $projectionId,
+        ];
+
+        $aggregateIds = [];
+        $results = $this->outbounds->queryProjectionStorage($aggregateRootMappingProjectionName, $aggregateRootMappingProjectionSchema, $filter);
+        if (count($results) > 0) {
+            foreach($results as $result) {
+                $aggregateIds[$result['aggregateName']] = $result['aggregateId'];
+            }
+        }
+
+        return $aggregateIds;
+    }
+
     /** @return Domain\Models\RootObjectMapping[] */
+    /*
     final public function getAggregateRootMappings(
         string $projectionName,
         string $projectionId,
@@ -257,7 +277,7 @@ class ProjectionService
         }
 
         return $projectionMapper->getRootObjectMappings();
-    }
+    }*/
 
     final public function createItem(string $projectionName, string $projectionId, array $data) : void
     {

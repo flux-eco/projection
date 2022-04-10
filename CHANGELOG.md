@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [1.4.0]
+* added getAggregateIdsForProjectionId
+
 ## [1.3.0]
 * added getAggregateIdForProjectionId
 

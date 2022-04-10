@@ -58,6 +58,10 @@ class Api
         return $this->projectionService->getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName);
     }
 
+    final public function getAggregateIdsForProjectionId(string $projectionName, string $projectionId): array {
+        return $this->projectionService->getAggregateIdsForProjectionId($projectionName, $projectionId);
+    }
+
     final public function getItemList(string $projectionName, array $filter): array
     {
         return $this->projectionService->getItemList($projectionName, $filter);

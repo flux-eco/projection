@@ -72,8 +72,8 @@ class ProjectionStream
     final public function loadProjectedRows(int $sequenceOffSet = 0, int $limit = 0): void
     {
         $queriedRows = $this->outbounds->queryProjectionStorage($this->projectionName, $this->schema, [], $sequenceOffSet, $limit);
-        foreach ($queriedRows as $projectedRow) {
-            $this->apply($projectedRow);
+        foreach ($queriedRows as $projectedRowArray) {
+            $this->apply(ProjectedRow::fromArray($projectedRowArray, $this->schema));
         }
 
         $this->totalLoaded = count($this->projectedRows);

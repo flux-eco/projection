@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [1.5.0]
+* added getAggregateIdForExternalId
+* getProjectionIdForExternalId
+* registerExternalId
+
 ## [1.4.0]
 * added getAggregateIdsForProjectionId
 

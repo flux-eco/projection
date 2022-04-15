@@ -87,3 +87,33 @@ $item = fluxProjection\getItem($projectionName, $projectionId);
 print_r($item).PHP_EOL.PHP_EOL;
 
 
+//register ExternalId
+echo "registerExternalId: ".PHP_EOL.PHP_EOL;
+
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
+
+fluxProjection\registerExternalId($aggregateName, $projectionName, $externalId);
+
+
+//get AggregateId for ExternalId
+echo "getAggregateIdForExternalId: ".PHP_EOL;
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
+
+$aggregateId = fluxProjection\getAggregateIdForExternalId($aggregateName, $projectionName, $externalId);
+
+echo $aggregateId.PHP_EOL.PHP_EOL;
+
+//get ProjectionId for ExternalId
+echo "getProjectionIdForExternalId: ".PHP_EOL;
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
+
+$projectionId = fluxProjection\getProjectionIdForExternalId($aggregateName, $projectionName, $externalId);
+
+echo $projectionId.PHP_EOL.PHP_EOL;
+

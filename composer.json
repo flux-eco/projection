@@ -1,7 +1,7 @@
 {
   "name": "flux-eco/projection",
   "description": "Creates projections of aggregate root objects",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "flux-app",
   "keywords": [
     "flux-eco",
@@ -48,11 +48,13 @@
       "fn/getAggregateIdsForProjectionId.php",
       "fn/getItem.php",
       "fn/getItemList.php",
-      "fn/getProjectionIdForExternalIdIfExists.php",
+      "fn/getProjectionIdForExternalId.php",
       "fn/getAggregateIdForProjectionId.php",
       "fn/initialize.php",
       "fn/receiveAggregateRootStatePublished.php",
-      "fn/getAggregateRootMappingsForProjectionData.php"
+      "fn/getAggregateRootMappingsForProjectionData.php",
+      "fn/getAggregateIdForExternalId.php",
+      "fn/registerExternalId.php"
     ],
     "psr-4": {
       "FluxEco\\Projection\\": [

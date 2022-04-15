@@ -90,7 +90,6 @@ properties:
 example.php
 ```
 <?php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 FluxEco\DotEnv\Api::new()->load(__DIR__);
@@ -98,6 +97,16 @@ FluxEco\DotEnv\Api::new()->load(__DIR__);
 //initialize
 fluxProjection\initialize();
 echo "projection storage initialized".PHP_EOL.PHP_EOL;
+
+//getAggregateRootMappingsForProjectionData
+$projectionName = 'account';
+$projectionData = [
+    "firstname" => "Emmett",
+    "lastname" => "Brown",
+];
+$aggregateRootMappings = fluxProjection\getAggregateRootMappingsForProjectionData($projectionName, $projectionData);
+echo 'getAggregateRootMappingsForProjectionData'.PHP_EOL.PHP_EOL;
+print_r($aggregateRootMappings);
 
 //receive aggregateRootStatePublished
 $aggregateRootId = fluxValueObject\getNewUuid();
@@ -143,6 +152,22 @@ $projectionId = fluxProjection\getProjectionIdForAggregateId($projectionName, $a
 
 echo $projectionId.PHP_EOL.PHP_EOL;
 
+//getAggregateIdForProjectionId
+echo 'getAggregateIdForProjectionId: '.PHP_EOL;
+$aggregateName = 'account';
+
+$aggregateId = fluxProjection\getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName);
+
+echo $aggregateId.PHP_EOL.PHP_EOL;
+
+
+//getAggregateIdsForProjectionId
+echo 'getAggregateIdsForProjectionId: '.PHP_EOL;
+
+$aggregateIds = fluxProjection\getAggregateIdsForProjectionId($projectionName, $projectionId);
+
+print_r($aggregateIds).PHP_EOL.PHP_EOL;
+
 
 //getItem
 echo "getItem: ".PHP_EOL;
@@ -152,18 +177,52 @@ $item = fluxProjection\getItem($projectionName, $projectionId);
 print_r($item).PHP_EOL.PHP_EOL;
 
 
-//getAggregateRootMappingsForProjectionId
-echo 'getAggregateRootMappingsForProjectionId '.PHP_EOL;
+//register ExternalId
+echo "registerExternalId: ".PHP_EOL.PHP_EOL;
 
-$mapping = fluxProjection\getAggregateRootMappingsForProjectionId($projectionId);
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
 
-print_r($mapping).PHP_EOL.PHP_EOL;
+fluxProjection\registerExternalId($aggregateName, $projectionName, $externalId);
+
+
+//get AggregateId for ExternalId
+echo "getAggregateIdForExternalId: ".PHP_EOL;
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
+
+$aggregateId = fluxProjection\getAggregateIdForExternalId($aggregateName, $projectionName, $externalId);
+
+echo $aggregateId.PHP_EOL.PHP_EOL;
+
+//get ProjectionId for ExternalId
+echo "getProjectionIdForExternalId: ".PHP_EOL;
+$aggregateName = 'account';
+$projectionName = 'account';
+$externalId = '123';
+
+$projectionId = fluxProjection\getProjectionIdForExternalId($aggregateName, $projectionName, $externalId);
+
+echo $projectionId.PHP_EOL.PHP_EOL;
 ```
 
 output
 ```
 projection storage initialized
 
+getAggregateRootMappingsForProjectionData
+
+Array
+(
+    [account] => Array
+        (
+            [firstname] => Emmett
+            [lastname] => Brown
+        )
+
+)
 aggregate root state published
 
 getItemList: 
@@ -171,35 +230,36 @@ Array
 (
     [0] => Array
         (
-            [projectionId] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
+            [projectionId] => 20cdb2e1-b811-44b7-8f82-ce08d0338bb4
             [firstname] => Emmett
             [lastname] => Brown
         )
-
 )
 getProjectionIdForAggregateId 
-ec6331f0-306a-48bc-9ac3-c11114e55bbf
+6c6512a4-499a-427f-9070-b3e66bf35ab3
 
+getAggregateIdForProjectionId: 
+6c8a642b-b7a0-48af-aaae-21564c0fe609
+
+getAggregateIdsForProjectionId: 
+Array
+(
+    [account] => 6c8a642b-b7a0-48af-aaae-21564c0fe609
+)
 getItem: 
 Array
 (
-    [projectionId] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
+    [projectionId] => 6c6512a4-499a-427f-9070-b3e66bf35ab3
     [firstname] => Emmett
     [lastname] => Brown
 )
-getAggregateRootMappingsForProjectionId 
-Array
-(
-    [0] => FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter Object
-        (
-            [projectionName:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => account
-            [projectionId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => ec6331f0-306a-48bc-9ac3-c11114e55bbf
-            [aggregateName:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => account
-            [aggregateId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => 6a1e4b65-0810-4bb2-a120-6624be0a7107
-            [externalId:FluxEco\Projection\Adapters\AggregateRoot\AggregateRootMappingAdapter:private] => 
-        )
+registerExternalId: 
 
-)
+getAggregateIdForExternalId: 
+2e9d3ad5-b727-49bf-9a60-47acc802a298
+
+getProjectionIdForExternalId: 
+bc3a543e-d9c0-421f-bd21-3c5732ea8f29
 ```
 
 ## Contributing :purple_heart:

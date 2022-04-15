@@ -31,6 +31,11 @@ class Api
         $this->projectionService->initalizeProjectionStorages();
     }
 
+    final public function reinitialize() : void
+    {
+        $this->projectionService->reinitalizeProjectionStorages();
+    }
+
     final public function getAggregateRootMappingsForProjectionData(string $projectionName, array $keyValueData) : array
     {
         return $this->projectionService->getAggregateRootMappingsForProjectionData($projectionName, $keyValueData);
@@ -96,6 +101,9 @@ class Api
         return $this->projectionService->getProjectionIdForAggregateId($projectionName, $aggregateId);
     }
 
+    /**
+     * @throws Exception
+     */
     final public function getProjectionIdForExternalId(string $projectionName, string $aggregateName, string $externalId) : ?string
     {
         return $this->projectionService->getProjectionIdForExternalId($projectionName, $aggregateName, $externalId);

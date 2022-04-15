@@ -19,7 +19,7 @@ class StoreProjectionAggregateMappingCommand implements Command
         $this->externalId = $externalId;
     }
 
-    public static function new(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId, ?string $externalId = null): self
+    public static function new(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId,  ?string $externalId): self
     {
         return new self(
             $projectionName,

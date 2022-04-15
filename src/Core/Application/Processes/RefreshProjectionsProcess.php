@@ -41,10 +41,13 @@ class RefreshProjectionsProcess
         foreach ($projectionSchemas as $projectionSchema) {
             $projectionName = $projectionSchema['title'];
 
+
+
             $externalId = null;
             if (empty($projectionSchema['externalIdName']) === false) {
                 $externalId = $rowValues->offsetGet($projectionSchema['externalIdName']);
             }
+
 
             $getProjectionIdForAggregateProjectionCommand = Handlers\GetProjectionIdForAggregateProjectionCommand::new($projectionName, $aggregateId);
             $projectionId = Handlers\GetProjectionIdForAggregateProjectionHandler::new($this->outbounds)->handle($getProjectionIdForAggregateProjectionCommand);
@@ -53,17 +56,20 @@ class RefreshProjectionsProcess
                 $projectionId = $this->outbounds->getNewUuid();
                 $storeProjectionAggregateMappingCommand = Handlers\StoreProjectionAggregateMappingCommand::new($projectionName, $projectionId, $aggregateName, $aggregateId, $externalId);
                 $storeProjectionAggregateMappingHandler = Handlers\StoreProjectionAggregateMappingHandler::new($this->outbounds);
-                $this->processCommand($storeProjectionAggregateMappingCommand, $storeProjectionAggregateMappingHandler);
+                $storeProjectionAggregateMappingHandler->handle($storeProjectionAggregateMappingCommand);
+            }
+
+            $schema = $this->outbounds->getProjectionSchema($projectionName);
+            $evaluateRulesCommand = Handlers\EvaluateRulesCommand::new($projectionName, $projectionId, $schema, $rowValues->toArray());
+            $evaluateRulesHandler = Handlers\EvaluateRulesHandler::new($this->outbounds);
+            $result = $evaluateRulesHandler->handle($evaluateRulesCommand);
+            if($result === false) {
+               continue;
             }
 
             $storeProjectionCommand = Handlers\StoreProjectionCommand::new($projectionName, $projectionId, $rowValues->toArray());
             $storeProjectionHandler = Handlers\StoreProjectionHandler::new($this->outbounds);
-            $this->processCommand($storeProjectionCommand, $storeProjectionHandler);
+            $storeProjectionHandler->handle($storeProjectionCommand);
         }
-    }
-
-    private function processCommand(Handlers\Command $command, Handlers\Handler $handler): void
-    {
-        $handler->handle($command);
     }
 }

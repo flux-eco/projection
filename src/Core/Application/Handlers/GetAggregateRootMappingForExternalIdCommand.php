@@ -11,7 +11,7 @@ class GetAggregateRootMappingForExternalIdCommand implements Command
     private function __construct(string $projectionName, string $aggregateName, string $externalId)
     {
         $this->projectionName = $projectionName;
-        $this->aggregateName = $projectionName;
+        $this->aggregateName = $aggregateName;
         $this->externalId  = $externalId;
     }
 

@@ -51,6 +51,7 @@
       "fn/getProjectionIdForExternalId.php",
       "fn/getAggregateIdForProjectionId.php",
       "fn/initialize.php",
+      "fn/reinitialize.php",
       "fn/receiveAggregateRootStatePublished.php",
       "fn/getAggregateRootMappingsForProjectionData.php",
       "fn/getAggregateIdForExternalId.php",

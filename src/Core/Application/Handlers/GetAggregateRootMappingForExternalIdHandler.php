@@ -26,6 +26,8 @@ class GetAggregateRootMappingForExternalIdHandler implements Handler
 
     public function handle(GetAggregateRootMappingForExternalIdCommand|Command $command): ?Domain\Models\AggregateRootMapping {
 
+        //todo get from stream because of to much queries
+
         $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
         $aggregateRootMappingProjectionSchema = $this->outbounds->getProjectionSchema($aggregateRootMappingProjectionName);
         $filter = [
@@ -34,6 +36,7 @@ class GetAggregateRootMappingForExternalIdHandler implements Handler
             'externalId' => $command->getExternalId()
         ];
         $result = $this->outbounds->queryProjectionStorage($aggregateRootMappingProjectionName, $aggregateRootMappingProjectionSchema, $filter);
+
 
         if (count($result) > 1) {
             throw new Exception('More than one mapping result found for externalId: ' . $command->getExternalId() .' and projection '.$command->getProjectionName().' aggregateName '.$command->getAggregateName());

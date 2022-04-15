@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.6.0]
+* added reinitialize
+* added rule base projections
+
 ## [1.5.0]
 * added getAggregateIdForExternalId
 * getProjectionIdForExternalId

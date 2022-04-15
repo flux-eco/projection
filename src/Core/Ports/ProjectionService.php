@@ -35,6 +35,17 @@ class ProjectionService
         foreach ($this->getProjectionSchemas() as $projectionSchema) {
             $projectionName = $projectionSchema['title'];
 
+            $createProjectionStorage = Handlers\CreateProjectionStorageCommand::new($projectionName, $projectionSchema);
+            $createProjectionStorageHandler = Handlers\CreateProjectionStorageHandler::new($this->outbounds);
+            $createProjectionStorageHandler->handle($createProjectionStorage);
+        }
+    }
+
+    final public function reinitalizeProjectionStorages() : void
+    {
+        foreach ($this->getProjectionSchemas() as $projectionSchema) {
+            $projectionName = $projectionSchema['title'];
+
             $deleteProjectionStorage = Handlers\DeleteProjectionStorageCommand::new($projectionName, $projectionSchema);
             $deleteProjectionStorageHandler = Handlers\DeleteProjectionStorageHandler::new($this->outbounds);
             $deleteProjectionStorageHandler->handle($deleteProjectionStorage);

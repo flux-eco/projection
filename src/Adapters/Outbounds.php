@@ -63,6 +63,9 @@ class Outbounds implements Core\Ports\Outbounds
 
     public function createProjectionStorage(string $tableName, array $schema) : void
     {
+        if(array_key_exists('properties', $schema) === false) {
+            return; //e.g. a pure select projection
+        }
         fluxStorage\createStorage($tableName, $schema, $this->projectionStorageConfigEnvPrefix);
     }
 
@@ -82,9 +85,9 @@ class Outbounds implements Core\Ports\Outbounds
         return fluxStorage\countTotalRows($projectionName, $jsonSchema,  $this->projectionStorageConfigEnvPrefix, $filter, $limit);
     }
 
-    public function queryProjectionStorage(string $tableName, array $schema, array $filter, int $sequenceOffSet = 0, int $limit = 0): array
+    public function queryProjectionStorage(string $projectionName, array $schema, ?array $filter = null, ?int $offset = null, ?int $limit = null, ?string $orderBy = null, ?string $search = null): array
     {
-        return fluxStorage\getData($tableName, $schema, $this->projectionStorageConfigEnvPrefix, $filter, $sequenceOffSet, $limit);
+        return fluxStorage\getData($projectionName, $schema, $this->projectionStorageConfigEnvPrefix, $filter, $offset, $limit, $orderBy, $search);
     }
 
     public function getProjectionSchema(string $projectionName) : array

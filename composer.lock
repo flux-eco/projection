@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37b849b69df0178f2d6909f7d4ad58e7",
+    "content-hash": "af0e5afef3800dc2f3484b6b7332f999",
     "packages": [
         {
             "name": "brick/math",
@@ -124,16 +124,16 @@
         },
         {
             "name": "flux-eco/global-stream",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/flux-eco/global-stream.git",
-                "reference": "8eac1e19b88ee6d8bf1777f8b363b7f252cd7e7a"
+                "reference": "f125113786ce801e975ae2836591d7113cd3b3d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flux-eco/global-stream/zipball/8eac1e19b88ee6d8bf1777f8b363b7f252cd7e7a",
-                "reference": "8eac1e19b88ee6d8bf1777f8b363b7f252cd7e7a",
+                "url": "https://api.github.com/repos/flux-eco/global-stream/zipball/f125113786ce801e975ae2836591d7113cd3b3d9",
+                "reference": "f125113786ce801e975ae2836591d7113cd3b3d9",
                 "shasum": ""
             },
             "require": {
@@ -184,9 +184,9 @@
             "support": {
                 "email": "support@fluxlabs.ch",
                 "issues": "https://github.com/flux-eco/global-stream/issues",
-                "source": "https://github.com/flux-eco/global-stream/tree/v1.0.0"
+                "source": "https://github.com/flux-eco/global-stream/tree/v1.0.1"
             },
-            "time": "2022-04-09T18:09:43+00:00"
+            "time": "2022-04-15T20:43:33+00:00"
         },
         {
             "name": "flux-eco/json-schema-assertion",
@@ -366,21 +366,22 @@
         },
         {
             "name": "flux-eco/storage",
-            "version": "1.1.0",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/flux-eco/storage.git",
-                "reference": "986139e2cda44570a7ee8e785a9b92ba07c0854b"
+                "reference": "95da287c1f67e297ccb463d93fe423cb80259c1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flux-eco/storage/zipball/986139e2cda44570a7ee8e785a9b92ba07c0854b",
-                "reference": "986139e2cda44570a7ee8e785a9b92ba07c0854b",
+                "url": "https://api.github.com/repos/flux-eco/storage/zipball/95da287c1f67e297ccb463d93fe423cb80259c1c",
+                "reference": "95da287c1f67e297ccb463d93fe423cb80259c1c",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
+                "ext-pdo": "*",
                 "ext-yaml": "*",
                 "flux-eco/dot-env": ">=0.0.1",
                 "laminas/laminas-code": ">=4.4",
@@ -428,9 +429,9 @@
             ],
             "support": {
                 "email": "support@fluxlabs.ch",
-                "source": "https://github.com/flux-eco/storage/tree/v1.1.0"
+                "source": "https://github.com/flux-eco/storage/tree/v1.2.2"
             },
-            "time": "2022-04-08T21:40:39+00:00"
+            "time": "2022-04-22T12:39:05+00:00"
         },
         {
             "name": "flux-eco/value-object",
@@ -2077,16 +2078,16 @@
         },
         {
             "name": "swoole/ide-helper",
-            "version": "4.8.8",
+            "version": "4.8.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swoole/ide-helper.git",
-                "reference": "dd87843a5040831f9ad40b68fb57879b7342ef61"
+                "reference": "8f82ba3b6af04a5bccb97c1654af992d1ee8b0fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swoole/ide-helper/zipball/dd87843a5040831f9ad40b68fb57879b7342ef61",
-                "reference": "dd87843a5040831f9ad40b68fb57879b7342ef61",
+                "url": "https://api.github.com/repos/swoole/ide-helper/zipball/8f82ba3b6af04a5bccb97c1654af992d1ee8b0fe",
+                "reference": "8f82ba3b6af04a5bccb97c1654af992d1ee8b0fe",
                 "shasum": ""
             },
             "type": "library",
@@ -2103,7 +2104,7 @@
             "description": "IDE help files for Swoole.",
             "support": {
                 "issues": "https://github.com/swoole/ide-helper/issues",
-                "source": "https://github.com/swoole/ide-helper/tree/4.8.8"
+                "source": "https://github.com/swoole/ide-helper/tree/4.8.9"
             },
             "funding": [
                 {
@@ -2115,7 +2116,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-17T18:24:39+00:00"
+            "time": "2022-04-18T20:38:04+00:00"
         },
         {
             "name": "symfony/console",

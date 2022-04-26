@@ -11,7 +11,7 @@ interface Outbounds
     public function deleteProjectedRow(string $projectionName, array $jsonSchema, string $projectionId): void;
     public function countTotalProjectedRow(string $projectionName, array $jsonSchema, array $filter = [], $limit = 0): int;
     public function deleteProjectionStorage(string $tableName, array $schema);
-    public function queryProjectionStorage(string $projectionName, array $schema, array $filter, int $sequenceOffSet = 0, int $limit = 0): array;
+    public function queryProjectionStorage(string $projectionName, array $schema, ?array $filter = null, ?int $offset = null, ?int $limit = null, ?string $orderBy = null, ?string $search = null): array;
     public function getProjectionSchema(string $projectionName) : array;
     public function storeProjectedRows(string $projectionName, array $jsonSchema,  array $recordedRows): void;
     public function getNewUuid(): string;

@@ -52,7 +52,7 @@ class ProjectedRow
 
     public function evaluate(string $propertyKey, mixed $propertyValue): void
     {
-        if (array_key_exists($propertyKey, $this->schema['properties'])) {
+        if (array_key_exists($propertyKey, $this->schema['properties']) || $propertyKey === 'fulltextSearch') {
             $this->evaluatedProperties->offsetSet($propertyKey, $propertyValue);
             $this->unevaluatedProperties->offsetUnset($propertyKey);
         }

@@ -8,10 +8,12 @@ class Api
 {
     const EVENT_NAME_AGGREGATE_ROOT_DELETED = 'aggregateRootDeleted';
 
+    private Adapters\Outbounds $outbounds;
     private Core\Ports\ProjectionService $projectionService;
 
     private function __construct(Adapters\Outbounds $outbounds)
     {
+        $this->outbounds = $outbounds;
         $this->projectionService = Core\Ports\ProjectionService::new($outbounds);
     }
 
@@ -75,9 +77,28 @@ class Api
         return $this->projectionService->getAggregateIdsForProjectionId($projectionName, $projectionId);
     }
 
-    final public function getItemList(string $projectionName, array $filter) : array
-    {
-        return $this->projectionService->getItemList($projectionName, $filter);
+    final public function getItemList(
+        string $projectionName,
+        ?string $parentId,
+        ?int $offset,
+        ?int $limit,
+        ?OrderByRequest $orderByRequest = null,
+        ?string $search = null
+    ) : array {
+        $orderBy = null;
+        $schema = $this->outbounds->getProjectionSchema($projectionName);
+
+        //todo
+        if (key_exists('select', $schema)) {
+            $projectionName = $schema['select']['table'];
+            $schema = $this->outbounds->getProjectionSchema($schema['select']['table']);
+        }
+
+        if (is_null($orderByRequest) === false) {
+            $orderBy = $orderByRequest->toDomain($schema);
+        }
+
+        return $this->projectionService->getItemList($projectionName, $parentId, $offset, $limit, $orderBy, $search);
     }
 
     final public function getItem(string $projectionName, string $projectionId) : array
@@ -104,13 +125,19 @@ class Api
     /**
      * @throws Exception
      */
-    final public function getProjectionIdForExternalId(string $projectionName, string $aggregateName, string $externalId) : ?string
-    {
+    final public function getProjectionIdForExternalId(
+        string $projectionName,
+        string $aggregateName,
+        string $externalId
+    ) : ?string {
         return $this->projectionService->getProjectionIdForExternalId($projectionName, $aggregateName, $externalId);
     }
 
-    final public function getAggregateIdForExternalId(string $projectionName, string $aggregateName, string $externalId) : ?string
-    {
+    final public function getAggregateIdForExternalId(
+        string $projectionName,
+        string $aggregateName,
+        string $externalId
+    ) : ?string {
         return $this->projectionService->getAggregateIdForExternalId($projectionName, $aggregateName, $externalId);
     }
 

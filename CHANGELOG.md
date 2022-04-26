@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [1.7.0]
+feature: filter, limit, search
+
 ## [1.6.0]
 * added reinitialize
 * added rule base projections

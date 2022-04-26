@@ -41,13 +41,10 @@ class RefreshProjectionsProcess
         foreach ($projectionSchemas as $projectionSchema) {
             $projectionName = $projectionSchema['title'];
 
-
-
             $externalId = null;
             if (empty($projectionSchema['externalIdName']) === false) {
                 $externalId = $rowValues->offsetGet($projectionSchema['externalIdName']);
             }
-
 
             $getProjectionIdForAggregateProjectionCommand = Handlers\GetProjectionIdForAggregateProjectionCommand::new($projectionName, $aggregateId);
             $projectionId = Handlers\GetProjectionIdForAggregateProjectionHandler::new($this->outbounds)->handle($getProjectionIdForAggregateProjectionCommand);

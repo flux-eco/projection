@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## [1.8.0]
+some refactorings
+
 ## [1.7.0]
 feature: filter, limit, search
 

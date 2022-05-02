@@ -14,5 +14,5 @@ function getItemList(
     ?array $filter = []
 ) : array {
     return Projection\Api::newFromEnv()->getItemList($projectionName, $parentId, $offset, $limit,
-        Projection\OrderByRequest::fromArray($orderBy), $search);
+        Projection\OrderByRequest::fromArray($orderBy), $search, $filter);
 }

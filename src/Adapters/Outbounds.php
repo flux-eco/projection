@@ -7,11 +7,14 @@ use FluxEco\Projection\Core;
 use fluxStorage;
 use fluxValueObject;
 use fluxGlobalStream;
+use fluxMessageServer;
 
 class Outbounds implements Core\Ports\Outbounds
 {
     private const PROJECTION_ID_COLUMN_NAME = 'projectionId';
-    private const PROJECTION_NAME_AGGREGATE_ROOT_MAPPING = 'AggregateRootMapping';
+    private const AGGREGATE_ID_COLUMN_NAME = 'aggregateId';
+    private const PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_PROJECTION_ID = 'AggregateRootIdProjectionIdMapping';
+    private const PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_EXTERNAL_ID = 'AggregateRootIdExternalIdMapping';
 
     private string $projectionAppSchemaDirectory;
     private string $projectionEcoSchemaDirectory;
@@ -39,6 +42,11 @@ class Outbounds implements Core\Ports\Outbounds
         );
     }
 
+    public function startMessageServer() : void
+    {
+        fluxMessageServer\startServer('projection', MessageServer\MessageServerApi::new());
+    }
+
     public function getProjectionStorageConfigEnvPrefix() : string
     {
         return $this->projectionStorageConfigEnvPrefix;
@@ -52,9 +60,14 @@ class Outbounds implements Core\Ports\Outbounds
         ];
     }
 
-    final public function getAggregateRootMappingProjectionName(): string {
-        return self::PROJECTION_NAME_AGGREGATE_ROOT_MAPPING;
+    final public function getProjectionNameMappingAggregateRootIdProjectionId(): string {
+        return self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_PROJECTION_ID;
     }
+
+    final public function getProjectionNameMappingAggregateRootIdExternalId(): string {
+        return self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_EXTERNAL_ID;
+    }
+
 
     public function reprojectGlobalStreamStates(array $aggregateRootNames) : void
     {
@@ -96,10 +109,33 @@ class Outbounds implements Core\Ports\Outbounds
         return $schemaRegistry->getProjection($projectionName);
     }
 
-    final public function getProjectionSchemasForAggregate(string $aggregateName): array
+    final public function getProjectionSchemasForAggregate(string $aggregateName): ?array
     {
         $schemaRegistry = SchemaRegistry\ProjectionSchemaRegistry::new($this->getProjectionSchemaDirectories());
+
+        if($schemaRegistry->hasAggregateProjections($aggregateName) === false) {
+            return null;
+        }
+
         return $schemaRegistry->getProjectionsForAggregate($aggregateName);
+    }
+
+    final public function storeAggregateRootIdProjectionIdMapping(Core\Domain\Models\AggregateRootIdProjectionIdMapping $mapping): void
+    {
+        $data = $mapping->toArray();
+        $filter = [self::AGGREGATE_ID_COLUMN_NAME => $mapping->getAggregateId(), self::PROJECTION_ID_COLUMN_NAME => $mapping->getProjectionId()];
+        $jsonSchema = $this->getProjectionSchema(self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_PROJECTION_ID);
+
+        fluxStorage\storeData(self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_PROJECTION_ID, $jsonSchema, $this->projectionStorageConfigEnvPrefix, $filter, $data);
+    }
+
+    final public function storeAggregateRootIdExternalIdMapping(Core\Domain\Models\AggregateRootIdExternalIdMapping $mapping): void
+    {
+        $data = $mapping->toArray();
+        $filter = [self::AGGREGATE_ID_COLUMN_NAME => $mapping->getAggregateId()];
+        $jsonSchema = $this->getProjectionSchema(self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_EXTERNAL_ID);
+
+        fluxStorage\storeData(self::PROJECTION_NAME_MAPPING_AGGREGATE_ROOT_ID_EXTERNAL_ID, $jsonSchema, $this->projectionStorageConfigEnvPrefix, $filter, $data);
     }
 
     /** @param Core\Domain\ProjectedRow[] $recordedRows */

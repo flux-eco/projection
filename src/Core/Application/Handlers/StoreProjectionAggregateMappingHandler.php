@@ -19,8 +19,8 @@ class StoreProjectionAggregateMappingHandler implements Handler
         Ports\Outbounds $outbounds
     ): self
     {
-        $aggregateRootMappingProjectionName = 'AggregateRootMapping';
-        $aggregateRootMappingSchema = $outbounds->getProjectionSchema('AggregateRootMapping');
+        $aggregateRootMappingProjectionName = $outbounds->getProjectionNameMappingAggregateRootIdProjectionId();
+        $aggregateRootMappingSchema = $outbounds->getProjectionSchema($aggregateRootMappingProjectionName);
         $projectionStream = Domain\ProjectionStream::new(
             $outbounds,
             $aggregateRootMappingProjectionName,
@@ -32,12 +32,11 @@ class StoreProjectionAggregateMappingHandler implements Handler
 
     public function handle(StoreProjectionAggregateMappingCommand|Command $command): void
     {
-        $aggregateRootMapping = Domain\Models\AggregateRootMapping::new(
+        $aggregateRootMapping = Domain\Models\AggregateRootIdProjectionIdMapping::new(
             $command->getProjectionName(),
             $command->getProjectionId(),
             $command->getAggregateName(),
-            $command->getAggregateId(),
-            $command->getExternalId()
+            $command->getAggregateId()
         );
         $this->projectionStream->projectData($command->getProjectionId(), $aggregateRootMapping->toArray());
     }

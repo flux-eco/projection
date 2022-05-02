@@ -4,7 +4,7 @@ namespace FluxEco\Projection\Core\Application\Handlers;
 use FluxEco\Projection\Core\{Ports, Domain};
 use Exception;
 
-class GetAggregateRootMappingForExternalIdHandler implements Handler
+class GetMappingAggregateRootIdExternalIdHandler implements Handler
 {
     private Ports\Outbounds $outbounds;
 
@@ -24,18 +24,15 @@ class GetAggregateRootMappingForExternalIdHandler implements Handler
         );
     }
 
-    public function handle(GetAggregateRootMappingForExternalIdCommand|Command $command): ?Domain\Models\AggregateRootMapping {
-
-        //todo get from stream because of to much queries
-
-        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
-        $aggregateRootMappingProjectionSchema = $this->outbounds->getProjectionSchema($aggregateRootMappingProjectionName);
+    public function handle(GetMappingAggregateRootIdExternalIdCommand|Command $command): ?Domain\Models\AggregateRootIdExternalIdMapping {
+        $mappingProjectionName = $this->outbounds->getProjectionNameMappingAggregateRootIdExternalId();
+        $mappingProjectionSchema = $this->outbounds->getProjectionSchema($mappingProjectionName);
         $filter = [
-            'projectionName' => $command->getProjectionName(),
             'aggregateName' => $command->getAggregateName(),
-            'externalId' => $command->getExternalId()
+            'externalId' => $command->getExternalId(),
+            'externalSource' => $command->getExternalSource()
         ];
-        $result = $this->outbounds->queryProjectionStorage($aggregateRootMappingProjectionName, $aggregateRootMappingProjectionSchema, $filter);
+        $result = $this->outbounds->queryProjectionStorage($mappingProjectionName, $mappingProjectionSchema, $filter);
 
 
         if (count($result) > 1) {
@@ -43,7 +40,7 @@ class GetAggregateRootMappingForExternalIdHandler implements Handler
         }
 
         if (count($result) === 1) {
-            return Domain\Models\AggregateRootMapping::fromArray($result[0]);
+            return Domain\Models\AggregateRootIdExternalIdMapping::fromArray($result[0]);
         }
 
         return null;

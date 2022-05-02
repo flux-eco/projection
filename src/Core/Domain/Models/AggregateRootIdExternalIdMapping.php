@@ -2,28 +2,24 @@
 
 namespace FluxEco\Projection\Core\Domain\Models;
 
-class AggregateRootMapping implements \JsonSerializable
+class AggregateRootIdExternalIdMapping implements \JsonSerializable
 {
-
-    private string $projectionName;
-    private string $projectionId;
     private string $aggregateName;
     private string $aggregateId;
     private ?string $externalId;
+    private ?string $externalSource;
 
     private function __construct(
-        string  $projectionName,
-        string  $projectionId,
         string  $aggregateName,
         string  $aggregateId,
-        ?string $externalId
+        ?string $externalId,
+        ?string $externalSource
     )
     {
-        $this->projectionName = $projectionName;
-        $this->projectionId = $projectionId;
         $this->aggregateName = $aggregateName;
         $this->aggregateId = $aggregateId;
         $this->externalId = $externalId;
+        $this->externalSource = $externalSource;
     }
 
     public static function fromArray(
@@ -31,39 +27,26 @@ class AggregateRootMapping implements \JsonSerializable
     ): self
     {
         return new self(
-            $data['projectionName'],
-            $data['projectionId'],
             $data['aggregateName'],
             $data['aggregateId'],
-            $data['externalId']
+            $data['externalId'],
+            $data['externalSource']
         );
     }
 
     public static function new(
-        string  $projectionName,
-        string  $projectionId,
         string  $aggregateName,
         string  $aggregateId,
-        ?string $externalId = null
+        ?string $externalId = null,
+        ?string $externalSource = null,
     ): self
     {
         return new self(
-            $projectionName,
-            $projectionId,
             $aggregateName,
             $aggregateId,
-            $externalId
+            $externalId,
+            $externalSource
         );
-    }
-
-    final public function getProjectionName(): string
-    {
-        return $this->projectionName;
-    }
-
-    final public function getProjectionId(): string
-    {
-        return $this->projectionId;
     }
 
     final public function getAggregateName(): string
@@ -79,6 +62,11 @@ class AggregateRootMapping implements \JsonSerializable
     final public function getExternalId(): ?string
     {
         return $this->externalId;
+    }
+
+    public function getExternalSource() : ?string
+    {
+        return $this->externalSource;
     }
 
     public function toArray(): array

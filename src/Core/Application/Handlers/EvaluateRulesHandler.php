@@ -31,13 +31,13 @@ class EvaluateRulesHandler implements Handler
 
         $rules =  $schema['rules'];
         $data =  $command->getData();
-        foreach($rules as $aggregateName => $rule) {
+        foreach($rules as $rule) {
             //todo multiple aggregate per projection
             //todo commandHandlerQueue for handling different rule types
 
-            switch($rule['rule']) {
-                case Domain\Models\RuleEnum::EQUALS:
-                    $propertyValue = $data[$rule['property']];
+            switch($rule['condition']) {
+                case Domain\Models\RuleEnum::IS_EQUAL:
+                    $propertyValue = $data[$rule['attributeName']];
                     if($propertyValue !== $rule['value']) {
                         return false;
                     }

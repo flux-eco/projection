@@ -2,29 +2,23 @@
 
 namespace FluxEco\Projection\Core\Application\Handlers;
 
-class GetAggregateRootMappingForExternalIdCommand implements Command
+class GetMappingAggregateRootIdExternalIdCommand implements Command
 {
-    private string $projectionName;
     private string $aggregateName;
     private string $externalId;
+    private string $externalSource;
 
-    private function __construct(string $projectionName, string $aggregateName, string $externalId)
+    private function __construct(string $aggregateName, string $externalId, string $externalSource)
     {
-        $this->projectionName = $projectionName;
         $this->aggregateName = $aggregateName;
         $this->externalId  = $externalId;
+        $this->externalSource  = $externalSource;
     }
 
 
-    public static function new(string $projectionName, string $aggregateName, string $externalId): self
+    public static function new(string $aggregateName, string $externalId, string $externalSource): self
     {
-        return new self($projectionName, $aggregateName, $externalId);
-    }
-
-
-    public function getProjectionName() : string
-    {
-        return $this->projectionName;
+        return new self($aggregateName, $externalId, $externalSource);
     }
 
     public function getAggregateName() : string
@@ -35,6 +29,11 @@ class GetAggregateRootMappingForExternalIdCommand implements Command
     public function getExternalId() : string
     {
         return $this->externalId;
+    }
+
+    public function getExternalSource(): string
+    {
+        return $this->externalSource;
     }
 
 

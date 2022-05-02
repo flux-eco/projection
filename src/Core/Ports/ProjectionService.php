@@ -96,7 +96,12 @@ class ProjectionService
         string $aggregateName,
         Domain\Models\RowValues $values
     ) : void {
+
+
         $projectionSchemas = $this->outbounds->getProjectionSchemasForAggregate($aggregateName);
+        if($projectionSchemas === null) {
+            return;
+        }
 
         $command = RefreshProjectionsCommand::new(
             $aggregateId,
@@ -159,7 +164,7 @@ class ProjectionService
 
     final public function getProjectionIdForAggregateId(string $projectionName, string $aggregateId) : ?string
     {
-        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $aggregateRootMappingProjectionName = $this->outbounds->getProjectionNameMappingAggregateRootIdProjectionId();
         $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
         $filter = ['aggregateId' => $aggregateId, 'projectionName' => $projectionName];
         $result = $this->outbounds->queryProjectionStorage($aggregateRootMappingProjectionName,
@@ -180,11 +185,15 @@ class ProjectionService
     final public function getProjectionIdForExternalId(
         string $projectionName,
         string $aggregateName,
-        string $externalId
+        string $externalId,
+        string $externalSource,
     ) : ?string {
-        $command = Handlers\GetAggregateRootMappingForExternalIdCommand::new($projectionName, $aggregateName,
-            $externalId);
-        $aggregateRootMapping = Handlers\GetAggregateRootMappingForExternalIdHandler::new($this->outbounds)->handle($command);
+
+        $aggregateId = $this->getAggregateIdForExternalId($aggregateName, $externalId, $externalSource);
+
+
+        $command = Handlers\GetMappingAggregateRootIdProjectionIdCommand::new($aggregateName, $aggregateId, $projectionName);
+        $aggregateRootMapping = Handlers\GetMappingAggregateRootIdProjectionIdHandler::new($this->outbounds)->handle($command);
 
         if ($aggregateRootMapping === null) {
             return null;
@@ -195,7 +204,7 @@ class ProjectionService
 
     final public function getAggregateIdForProjectionId($projectionName, $projectionId, $aggregateName) : ?string
     {
-        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $aggregateRootMappingProjectionName = $this->outbounds->getProjectionNameMappingAggregateRootIdProjectionId();
         $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
         $filter = [
             'projectionName' => $projectionName,
@@ -219,13 +228,12 @@ class ProjectionService
      * @throws Exception
      */
     final public function getAggregateIdForExternalId(
-        string $projectionName,
         string $aggregateName,
-        string $externalId
+        string $externalId,
+        string $externalSource
     ) : ?string {
-        $command = Handlers\GetAggregateRootMappingForExternalIdCommand::new($projectionName, $aggregateName,
-            $externalId);
-        $aggregateRootMapping = Handlers\GetAggregateRootMappingForExternalIdHandler::new($this->outbounds)->handle($command);
+        $command = Handlers\GetMappingAggregateRootIdExternalIdCommand::new($aggregateName, $externalId, $externalSource);
+        $aggregateRootMapping = Handlers\GetMappingAggregateRootIdExternalIdHandler::new($this->outbounds)->handle($command);
 
         if ($aggregateRootMapping === null) {
             return null;
@@ -236,7 +244,7 @@ class ProjectionService
 
     final public function getAggregateIdsForProjectionId($projectionName, $projectionId) : array
     {
-        $aggregateRootMappingProjectionName = $this->outbounds->getAggregateRootMappingProjectionName();
+        $aggregateRootMappingProjectionName = $this->outbounds->getProjectionNameMappingAggregateRootIdProjectionId();
         $aggregateRootMappingProjectionSchema = $this->getProjectionSchema($aggregateRootMappingProjectionName);
         $filter = [
             'projectionName' => $projectionName,
@@ -261,20 +269,44 @@ class ProjectionService
     /**
      * @throws Exception
      */
-    final public function registerExternalId(string $projectionName, string $aggregateName, string $externalId) : void
+    final public function registerAggregateId(string $aggregateName, string $aggregateId, string $projectionName) : void
     {
 
-        $command = Handlers\GetAggregateRootMappingForExternalIdCommand::new($projectionName, $aggregateName,
-            $externalId);
-        $aggregateRootMapping = Handlers\GetAggregateRootMappingForExternalIdHandler::new($this->outbounds)->handle($command);
+        $command = Handlers\GetMappingAggregateRootIdProjectionIdCommand::new($aggregateName, $aggregateId, $projectionName);
+        $aggregateRootMapping = Handlers\GetMappingAggregateRootIdProjectionIdHandler::new($this->outbounds)->handle($command);
 
         if ($aggregateRootMapping === null) {
             $projectionId = $this->outbounds->getNewUuid();
+
+            $aggregateRootMapping = Domain\Models\AggregateRootIdProjectionIdMapping::new(
+                $projectionName,
+                $projectionId,
+                $aggregateName,
+                $aggregateId
+            );
+            $this->outbounds->storeAggregateRootIdProjectionIdMapping($aggregateRootMapping);
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    final public function registerExternalId(string $aggregateName, string $externalId, string $externalSource) : void
+    {
+
+        $command = Handlers\GetMappingAggregateRootIdExternalIdCommand::new($aggregateName, $externalId, $externalSource);
+        $aggregateRootMapping = Handlers\GetMappingAggregateRootIdExternalIdHandler::new($this->outbounds)->handle($command);
+
+        if ($aggregateRootMapping === null) {
             $aggregateId = $this->outbounds->getNewUuid();
 
-            $command = Handlers\StoreProjectionAggregateMappingCommand::new($projectionName, $projectionId,
-                $aggregateName, $aggregateId, $externalId);
-            Handlers\StoreProjectionAggregateMappingHandler::new($this->outbounds)->handle($command);
+            $aggregateRootMapping = Domain\Models\AggregateRootIdExternalIdMapping::new(
+                $aggregateName,
+                $aggregateId,
+                $externalId,
+                $externalSource
+            );
+            $this->outbounds->storeAggregateRootIdExternalIdMapping($aggregateRootMapping);
         }
     }
 
@@ -302,13 +334,13 @@ class ProjectionService
         ?int $offset = null,
         ?int $limit = null,
         ?Domain\Models\OrderBy $orderBy = null,
-        ?string $search = null
+        ?string $search = null,
+        ?array $filter = null
     ) : array {
         $projectionSchema = $this->getProjectionSchema($projectionName);
 
-        $filter = null;
         if(is_null($parentId) === false) {
-            $filter = ['parentId' => $parentId];
+            $filter['parentId'] = $parentId;
         }
 
         $orderByString = null;

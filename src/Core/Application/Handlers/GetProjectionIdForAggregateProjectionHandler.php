@@ -25,7 +25,7 @@ class GetProjectionIdForAggregateProjectionHandler implements Handler
 
     public function handle(GetProjectionIdForAggregateProjectionCommand|Command $command): ?string {
 
-        $mappingProjectionName = 'AggregateRootMapping';
+        $mappingProjectionName = $this->outbounds->getProjectionNameMappingAggregateRootIdProjectionId();
         $schema = $this->outbounds->getProjectionSchema($mappingProjectionName);
 
         $projectionName = $command->getProjectionName();

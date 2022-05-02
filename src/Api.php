@@ -1,7 +1,7 @@
 <?php
 
 namespace FluxEco\Projection;
-
+use FluxEco\MessageServer;
 use Exception;
 
 class Api
@@ -47,10 +47,8 @@ class Api
         string $aggregateRootId,
         string $aggregateRootName,
         string $messageName,
-        string $jsonAggregateRootSchema,
         string $payload
     ) : void {
-        $aggregateRootSchema = json_decode($jsonAggregateRootSchema, true);
         $items = Adapters\AggregateRoot\ProjectedValuesAdapter::fromJson($payload)->toDomain();
 
         switch ($messageName) {
@@ -83,7 +81,8 @@ class Api
         ?int $offset,
         ?int $limit,
         ?OrderByRequest $orderByRequest = null,
-        ?string $search = null
+        ?string $search = null,
+        ?array $filter = null,
     ) : array {
         $orderBy = null;
         $schema = $this->outbounds->getProjectionSchema($projectionName);
@@ -98,7 +97,7 @@ class Api
             $orderBy = $orderByRequest->toDomain($schema);
         }
 
-        return $this->projectionService->getItemList($projectionName, $parentId, $offset, $limit, $orderBy, $search);
+        return $this->projectionService->getItemList($projectionName, $parentId, $offset, $limit, $orderBy, $search, $filter);
     }
 
     final public function getItem(string $projectionName, string $projectionId) : array
@@ -128,27 +127,28 @@ class Api
     final public function getProjectionIdForExternalId(
         string $projectionName,
         string $aggregateName,
-        string $externalId
+        string $externalId,
+        string $externalSource
     ) : ?string {
-        return $this->projectionService->getProjectionIdForExternalId($projectionName, $aggregateName, $externalId);
+        return $this->projectionService->getProjectionIdForExternalId($projectionName, $aggregateName, $externalId, $externalSource);
     }
 
     final public function getAggregateIdForExternalId(
-        string $projectionName,
         string $aggregateName,
-        string $externalId
+        string $externalId,
+        string $externalSource
     ) : ?string {
-        return $this->projectionService->getAggregateIdForExternalId($projectionName, $aggregateName, $externalId);
+        return $this->projectionService->getAggregateIdForExternalId($aggregateName, $externalId, $externalSource);
     }
 
     /**
      * @throws Exception
      */
     final public function registerExternalId(
-        string $projectionName,
         string $aggregateName,
-        string $externalId
+        string $externalId,
+        string $externalSource
     ) : void {
-        $this->projectionService->registerExternalId($projectionName, $aggregateName, $externalId);
+        $this->projectionService->registerExternalId($aggregateName, $externalId, $externalSource);
     }
 }

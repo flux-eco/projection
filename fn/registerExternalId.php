@@ -8,7 +8,7 @@ use Exception;
 /**
  * @throws Exception
  */
-function registerExternalId(string $projectionName, string $aggregateName, string $externalId): void
+function registerExternalId(string $aggregateName, string $externalId, string $externalSource): void
 {
-    Projection\Api::newFromEnv()->registerExternalId($projectionName, $aggregateName, $externalId);
+    Projection\Api::newFromEnv()->registerExternalId($aggregateName, $externalId, $externalSource);
 }

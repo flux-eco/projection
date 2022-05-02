@@ -42,8 +42,10 @@ class RefreshProjectionsProcess
             $projectionName = $projectionSchema['title'];
 
             $externalId = null;
+            $externalSource = null;
             if (empty($projectionSchema['externalIdName']) === false) {
                 $externalId = $rowValues->offsetGet($projectionSchema['externalIdName']);
+                $externalSource = $rowValues->offsetGet($projectionSchema['externalSource']);
             }
 
             $getProjectionIdForAggregateProjectionCommand = Handlers\GetProjectionIdForAggregateProjectionCommand::new($projectionName, $aggregateId);
@@ -51,7 +53,7 @@ class RefreshProjectionsProcess
 
             if ($projectionId === null) {
                 $projectionId = $this->outbounds->getNewUuid();
-                $storeProjectionAggregateMappingCommand = Handlers\StoreProjectionAggregateMappingCommand::new($projectionName, $projectionId, $aggregateName, $aggregateId, $externalId);
+                $storeProjectionAggregateMappingCommand = Handlers\StoreProjectionAggregateMappingCommand::new($projectionName, $projectionId, $aggregateName, $aggregateId, $externalId, $externalSource);
                 $storeProjectionAggregateMappingHandler = Handlers\StoreProjectionAggregateMappingHandler::new($this->outbounds);
                 $storeProjectionAggregateMappingHandler->handle($storeProjectionAggregateMappingCommand);
             }

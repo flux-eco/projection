@@ -8,25 +8,22 @@ class StoreProjectionAggregateMappingCommand implements Command
     private string $projectionId;
     private string $aggregateName;
     private string $aggregateId;
-    private ?string $externalId = null;
 
-    private function __construct(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId, ?string $externalId)
+    private function __construct(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId)
     {
         $this->projectionName = $projectionName;
         $this->projectionId = $projectionId;
         $this->aggregateName = $aggregateName;
         $this->aggregateId = $aggregateId;
-        $this->externalId = $externalId;
     }
 
-    public static function new(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId,  ?string $externalId): self
+    public static function new(string $projectionName, string $projectionId, string $aggregateName, string $aggregateId): self
     {
         return new self(
             $projectionName,
             $projectionId,
             $aggregateName,
-            $aggregateId,
-            $externalId
+            $aggregateId
         );
     }
 
@@ -43,11 +40,6 @@ class StoreProjectionAggregateMappingCommand implements Command
     final public function getAggregateId(): string
     {
         return $this->aggregateId;
-    }
-
-    final public function getExternalId(): ?string
-    {
-        return $this->externalId;
     }
 
     final public function getProjectionId(): string

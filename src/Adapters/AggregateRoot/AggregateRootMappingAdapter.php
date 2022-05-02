@@ -12,13 +12,15 @@ class AggregateRootMappingAdapter
     private string $aggregateName;
     private string $aggregateId;
     private ?string $externalId;
+    private ?string $externalSource;
 
     private function __construct(
         string  $projectionName,
         string  $projectionId,
         string  $aggregateName,
         string  $aggregateId,
-        ?string $externalId
+        ?string $externalId,
+        ?string $externalSource
     )
     {
         $this->projectionName = $projectionName;
@@ -26,10 +28,11 @@ class AggregateRootMappingAdapter
         $this->aggregateName = $aggregateName;
         $this->aggregateId = $aggregateId;
         $this->externalId = $externalId;
+        $this->externalSource = $externalSource;
     }
 
     public static function fromDomain(
-        Domain\Models\AggregateRootMapping $aggregateRootMapping
+        Domain\Models\AggregateRootIdProjectionIdMapping $aggregateRootMapping
     ): self
     {
         return new self(
@@ -37,7 +40,8 @@ class AggregateRootMappingAdapter
             $aggregateRootMapping->getProjectionId(),
             $aggregateRootMapping->getAggregateName(),
             $aggregateRootMapping->getAggregateId(),
-            $aggregateRootMapping->getExternalId()
+            $aggregateRootMapping->getExternalId(),
+            $aggregateRootMapping->getExternalSource()
         );
     }
 
@@ -64,5 +68,10 @@ class AggregateRootMappingAdapter
     public function getExternalId() : ?string
     {
         return $this->externalId;
+    }
+
+    public function getExternalSource() : ?string
+    {
+        return $this->externalSource;
     }
 }
